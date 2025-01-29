@@ -1,4 +1,3 @@
-// filepath: /c:/Users/Ihssane/Desktop/SCHOOL/MBA2-DFS-2024-2025/Test/Livrable/tests/taskManager.spec.js
 const { test, expect } = require("@playwright/test");
 
 test.describe("Task Manager", () => {

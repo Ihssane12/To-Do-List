@@ -1,15 +1,15 @@
-const swaggerJsdoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
 
 const options = {
   definition: {
-    openapi: '3.0.0',
+    openapi: "3.0.0",
     info: {
-      title: 'Task API',
-      version: '1.0.0',
+      title: "Task API",
+      version: "1.0.0",
     },
   },
-  apis: ['./src/routes/*.js'],
+  apis: ["./src/routes/*.js"], 
 };
 
 const swaggerSpec = swaggerJsdoc(options);
