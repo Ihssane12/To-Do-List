@@ -42,6 +42,7 @@ Check out the live demo at [Link to your live demo](#) 🔗
 
    ```bash
    cd task-manager
+   npm install
    npm start
    ```
 
