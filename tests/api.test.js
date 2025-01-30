@@ -3,7 +3,6 @@ import request from "supertest";
 import express from "express";
 import TaskController from "../src/Controllers/taskController";
 
-// Setup Express app and routes
 const app = express();
 app.use(express.json());
 
@@ -13,10 +12,9 @@ app.get("/tasks", taskController.getAllTasks.bind(taskController));
 app.put("/tasks/:id", taskController.updateTask.bind(taskController));
 app.delete("/tasks/:id", taskController.deleteTask.bind(taskController));
 
-// Reset tasks before each test
 beforeEach(() => {
   const tasks = require("../src/data/tasks");
-  tasks.length = 0; // Clear the tasks array
+  tasks.length = 0; 
 });
 
 describe("Task API", () => {
