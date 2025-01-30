@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>frontend.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>frontend.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="sswrap ">
+                <a class="ss" href="#section-1">&#x00a7;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-variable language_">document</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&quot;DOMContentLoaded&quot;</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> taskForm = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;task-form&quot;</span>);
+  <span class="hljs-keyword">const</span> taskInput = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;task-title&quot;</span>);
+  <span class="hljs-keyword">const</span> taskList = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;task-list&quot;</span>);
+
+  <span class="hljs-comment">/**
+   * Fetches all tasks from the API.
+   * <span class="hljs-doctag">@returns</span> {<span class="hljs-type">Promise&lt;Object[]&gt;</span>} A promise that resolves to an array of tasks.
+   */</span>
+  <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">fetchTasks</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">&quot;/api/tasks&quot;</span>);
+    <span class="hljs-keyword">const</span> tasks = <span class="hljs-keyword">await</span> response.<span class="hljs-title function_">json</span>();
+    <span class="hljs-keyword">return</span> tasks;
+  }
+
+  <span class="hljs-comment">/**
+   * Creates a new task by sending a POST request to the API.
+   * <span class="hljs-doctag">@param</span> {<span class="hljs-type">string</span>} <span class="hljs-variable">title</span> - The title of the task to be created.
+   * <span class="hljs-doctag">@returns</span> {<span class="hljs-type">Promise&lt;Object&gt;</span>} A promise that resolves to the newly created task.
+   */</span>
+  <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">createTask</span>(<span class="hljs-params">title</span>) {
+    <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">&quot;/api/tasks&quot;</span>, {
+      <span class="hljs-attr">method</span>: <span class="hljs-string">&quot;POST&quot;</span>,
+      <span class="hljs-attr">headers</span>: {
+        <span class="hljs-string">&quot;Content-Type&quot;</span>: <span class="hljs-string">&quot;application/json&quot;</span>,
+      },
+      <span class="hljs-attr">body</span>: <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>({ title, <span class="hljs-attr">completed</span>: <span class="hljs-literal">false</span> }),
+    });
+    <span class="hljs-keyword">const</span> task = <span class="hljs-keyword">await</span> response.<span class="hljs-title function_">json</span>();
+    <span class="hljs-keyword">return</span> task;
+  }
+
+  <span class="hljs-comment">/**
+   * Updates a task by sending a PUT request to the API.
+   * <span class="hljs-doctag">@param</span> {<span class="hljs-type">number</span>} <span class="hljs-variable">id</span> - The ID of the task to be updated.
+   * <span class="hljs-doctag">@param</span> {<span class="hljs-type">Object</span>} <span class="hljs-variable">updatedTask</span> - The updated task data.
+   * <span class="hljs-doctag">@param</span> {<span class="hljs-type">string</span>} updatedTask.title - The updated title of the task.
+   * <span class="hljs-doctag">@param</span> {<span class="hljs-type">boolean</span>} updatedTask.completed - The updated completion status of the task.
+   * <span class="hljs-doctag">@returns</span> {<span class="hljs-type">Promise&lt;Object&gt;</span>} A promise that resolves to the updated task.
+   */</span>
+  <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">updateTask</span>(<span class="hljs-params">id, updatedTask</span>) {
+    <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">`/api/tasks/<span class="hljs-subst">${id}</span>`</span>, {
+      <span class="hljs-attr">method</span>: <span class="hljs-string">&quot;PUT&quot;</span>,
+      <span class="hljs-attr">headers</span>: {
+        <span class="hljs-string">&quot;Content-Type&quot;</span>: <span class="hljs-string">&quot;application/json&quot;</span>,
+      },
+      <span class="hljs-attr">body</span>: <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(updatedTask),
+    });
+    <span class="hljs-keyword">const</span> task = <span class="hljs-keyword">await</span> response.<span class="hljs-title function_">json</span>();
+    <span class="hljs-keyword">return</span> task;
+  }
+
+  <span class="hljs-comment">/**
+   * Deletes a task by sending a DELETE request to the API.
+   * <span class="hljs-doctag">@param</span> {<span class="hljs-type">number</span>} <span class="hljs-variable">id</span> - The ID of the task to be deleted.
+   * <span class="hljs-doctag">@returns</span> {<span class="hljs-type">Promise&lt;void&gt;</span>} A promise that resolves when the task is deleted.
+   */</span>
+  <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">deleteTask</span>(<span class="hljs-params">id</span>) {
+    <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">`/api/tasks/<span class="hljs-subst">${id}</span>`</span>, {
+      <span class="hljs-attr">method</span>: <span class="hljs-string">&quot;DELETE&quot;</span>,
+    });
+  }
+
+  <span class="hljs-comment">/**
+   * Handles the form submission to create a new task.
+   * <span class="hljs-doctag">@param</span> {<span class="hljs-type">Event</span>} <span class="hljs-variable">event</span> - The form submission event.
+   */</span>
+  taskForm.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&quot;submit&quot;</span>, <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+    event.<span class="hljs-title function_">preventDefault</span>();
+    <span class="hljs-keyword">const</span> taskTitle = taskInput.<span class="hljs-property">value</span>.<span class="hljs-title function_">trim</span>();
+    <span class="hljs-keyword">if</span> (taskTitle !== <span class="hljs-string">&quot;&quot;</span>) {
+      <span class="hljs-keyword">const</span> task = <span class="hljs-keyword">await</span> <span class="hljs-title function_">createTask</span>(taskTitle);
+      <span class="hljs-title function_">renderTask</span>(task);
+      taskInput.<span class="hljs-property">value</span> = <span class="hljs-string">&quot;&quot;</span>;
+    }
+  });
+
+  <span class="hljs-comment">/**
+   * Renders a task item in the task list.
+   * <span class="hljs-doctag">@param</span> {<span class="hljs-type">Object</span>} <span class="hljs-variable">task</span> - The task to render.
+   * <span class="hljs-doctag">@param</span> {<span class="hljs-type">number</span>} task.id - The ID of the task.
+   * <span class="hljs-doctag">@param</span> {<span class="hljs-type">string</span>} task.title - The title of the task.
+   * <span class="hljs-doctag">@param</span> {<span class="hljs-type">boolean</span>} task.completed - The completion status of the task.
+   */</span>
+  <span class="hljs-keyword">function</span> <span class="hljs-title function_">renderTask</span>(<span class="hljs-params">task</span>) {
+    <span class="hljs-keyword">const</span> taskItem = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">createElement</span>(<span class="hljs-string">&quot;li&quot;</span>);
+    taskItem.<span class="hljs-title function_">setAttribute</span>(<span class="hljs-string">&quot;data-id&quot;</span>, task.<span class="hljs-property">id</span>);
+    taskItem.<span class="hljs-property">innerHTML</span> = <span class="hljs-string">`
+      &lt;input type=&quot;checkbox&quot; class=&quot;complete-checkbox&quot; <span class="hljs-subst">${
+        task.completed ? <span class="hljs-string">&quot;checked&quot;</span> : <span class="hljs-string">&quot;&quot;</span>
+      }</span>&gt;
+      &lt;span class=&quot;task-title <span class="hljs-subst">${task.completed ? <span class="hljs-string">&quot;completed&quot;</span> : <span class="hljs-string">&quot;&quot;</span>}</span>&quot;&gt;<span class="hljs-subst">${
+      task.title
+    }</span>&lt;/span&gt;
+      &lt;button class=&quot;edit-btn&quot;&gt;Edit&lt;/button&gt;
+      &lt;button class=&quot;delete-btn&quot;&gt;Delete&lt;/button&gt;
+    `</span>;
+    taskList.<span class="hljs-title function_">appendChild</span>(taskItem);
+
+    taskItem
+      .<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&quot;.complete-checkbox&quot;</span>)
+      .<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&quot;change&quot;</span>, <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+        <span class="hljs-keyword">const</span> isChecked = <span class="hljs-variable language_">this</span>.<span class="hljs-property">checked</span>;
+        <span class="hljs-keyword">const</span> updatedTask = <span class="hljs-keyword">await</span> <span class="hljs-title function_">updateTask</span>(task.<span class="hljs-property">id</span>, { <span class="hljs-attr">completed</span>: isChecked });
+        <span class="hljs-keyword">if</span> (updatedTask) {
+          taskItem
+            .<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&quot;.task-title&quot;</span>)
+            .<span class="hljs-property">classList</span>.<span class="hljs-title function_">toggle</span>(<span class="hljs-string">&quot;completed&quot;</span>, isChecked);
+        }
+      });
+
+    taskItem
+      .<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&quot;.edit-btn&quot;</span>)
+      .<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&quot;click&quot;</span>, <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+        <span class="hljs-keyword">const</span> newTitle = <span class="hljs-title function_">prompt</span>(<span class="hljs-string">&quot;Edit task:&quot;</span>, task.<span class="hljs-property">title</span>);
+        <span class="hljs-keyword">if</span> (newTitle !== <span class="hljs-literal">null</span> &amp;&amp; newTitle.<span class="hljs-title function_">trim</span>() !== <span class="hljs-string">&quot;&quot;</span>) {
+          <span class="hljs-keyword">const</span> updatedTask = <span class="hljs-keyword">await</span> <span class="hljs-title function_">updateTask</span>(task.<span class="hljs-property">id</span>, { <span class="hljs-attr">title</span>: newTitle });
+          <span class="hljs-keyword">if</span> (updatedTask) {
+            taskItem.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&quot;.task-title&quot;</span>).<span class="hljs-property">textContent</span> =
+              updatedTask.<span class="hljs-property">title</span>;
+          }
+        }
+      });
+
+    taskItem
+      .<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&quot;.delete-btn&quot;</span>)
+      .<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&quot;click&quot;</span>, <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+        <span class="hljs-keyword">await</span> <span class="hljs-title function_">deleteTask</span>(task.<span class="hljs-property">id</span>);
+        taskList.<span class="hljs-title function_">removeChild</span>(taskItem);
+      });
+  }
+
+  <span class="hljs-comment">/**
+   * Loads tasks from the API and renders them.
+   */</span>
+  <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">loadTasks</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">const</span> tasks = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetchTasks</span>();
+    tasks.<span class="hljs-title function_">forEach</span>(<span class="hljs-function">(<span class="hljs-params">task</span>) =&gt;</span> <span class="hljs-title function_">renderTask</span>(task));
+  }
+
+  <span class="hljs-title function_">loadTasks</span>();
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
