@@ -1,6 +1,6 @@
-import { Linter } from "eslint";
+const { Linter } = require("eslint");
 
-const config = new Linter.Config({
+const config = {
   env: {
     browser: true,
     es2021: true,
@@ -16,8 +16,8 @@ const config = new Linter.Config({
     sourceType: "module",
   },
   rules: {
-   
+    // Add your custom rules here
   },
-});
+};
 
-export default config;
+module.exports = config;
