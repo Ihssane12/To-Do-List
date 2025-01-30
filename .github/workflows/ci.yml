@@ -24,7 +24,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run Jest tests
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run Vitest tests
         run: npm test
 
       - name: Install Playwright browsers
