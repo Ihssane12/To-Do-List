@@ -21,10 +21,8 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.json());
 app.use("/api", taskRoutes);
 
-// Serve static files from the frontend directory
 app.use(express.static(path.join(__dirname, "")));
 
-// Serve the frontend index.html file for any unknown routes
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "src/component", "index.html"));
 });

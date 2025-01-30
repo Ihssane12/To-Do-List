@@ -1,206 +1,85 @@
-// import { describe, it, expect, beforeEach, afterEach } from "vitest";
-// import { JSDOM } from "jsdom";
-// import fs from "fs";
-// import path from "path";
+import { describe, it, expect, beforeEach } from "vitest";
+import request from "supertest";
+import express from "express";
+import TaskController from "../src/Controllers/taskController";
 
-// // Set up a global document and window object using jsdom for Vitest tests
-// const htmlPath = path.resolve(__dirname, "../src/component/index.html");
-// const htmlContent = fs.readFileSync(htmlPath, "utf8");
+// Setup Express app and routes
+const app = express();
+app.use(express.json());
 
-// let window, document;
+const taskController = new TaskController();
+app.post("/tasks", taskController.createTask.bind(taskController));
+app.get("/tasks", taskController.getAllTasks.bind(taskController));
+app.put("/tasks/:id", taskController.updateTask.bind(taskController));
+app.delete("/tasks/:id", taskController.deleteTask.bind(taskController));
 
-// describe("Task Manager", () => {
-//   let taskForm, taskInput, taskList;
+// Reset tasks before each test
+beforeEach(() => {
+  const tasks = require("../src/data/tasks");
+  tasks.length = 0; // Clear the tasks array
+});
 
-//   beforeEach(() => {
-//     // Set up the DOM for each test
-//     const dom = new JSDOM(htmlContent, { runScripts: "dangerously" });
-//     window = dom.window;
-//     document = window.document;
+describe("Task API", () => {
+  it("should create a new task", async () => {
+    const response = await request(app)
+      .post("/tasks")
+      .send({ title: "Test Task" });
 
-//     // Get references to the form, input, and task list
-//     taskForm = document.getElementById("task-form");
-//     taskInput = document.getElementById("task-title");
-//     taskList = document.getElementById("task-list");
-
-//     // Import the frontend.js which sets up event listeners
-//     const script = document.createElement("script");
-//     script.textContent = fs.readFileSync(
-//       path.resolve(__dirname, "../frontend.js"),
-//       "utf8"
-//     );
-//     document.body.appendChild(script);
-//   });
-
-//   afterEach(() => {
-//     // Cleanup any global mocks or event listeners after each test
-//     global.prompt = undefined; // Reset global prompt mock if used
-//     document.body.innerHTML = ""; // Clear the DOM after each test
-//   });
-
-//   it("should add a task to the list", async () => {
-//     taskInput.value = "Test Task"; // Set task title
-//     taskForm.dispatchEvent(new window.Event("submit")); // Use window.Event instead of Event
-
-//     // Wait for the DOM to be updated
-//     await new Promise((resolve) => setTimeout(resolve, 0));
-
-//     const taskItems = taskList.querySelectorAll("li");
-//     expect(taskItems.length).toBe(1); // There should be 1 task
-//     expect(taskItems[0].querySelector(".task-title").textContent).toBe(
-//       "Test Task"
-//     );
-//   });
-
-//   it("should edit a task", async () => {
-//     // Add a task first
-//     taskInput.value = "Task to be edited";
-//     taskForm.dispatchEvent(new window.Event("submit"));
-
-//     // Wait for the task to be added
-//     await new Promise((resolve) => setTimeout(resolve, 0));
-
-//     const taskItems = taskList.querySelectorAll("li");
-//     const editButton = taskItems[0].querySelector(".edit-btn");
-
-//     // Mock the prompt function
-//     global.prompt = () => "Edited Task";
-
-//     // Simulate clicking the edit button
-//     editButton.dispatchEvent(new window.MouseEvent("click", { bubbles: true }));
-
-//     // Wait for the DOM to be updated
-//     await new Promise((resolve) => setTimeout(resolve, 0));
-
-//     // Ensure the task is updated
-//     expect(taskItems[0].querySelector(".task-title").textContent).toBe(
-//       "Edited Task"
-//     );
-//   });
-
-//   it("should delete a task", async () => {
-//     // Add a task first
-//     taskInput.value = "Task to be deleted";
-//     taskForm.dispatchEvent(new window.Event("submit"));
-
-//     // Wait for the task to be added
-//     await new Promise((resolve) => setTimeout(resolve, 0));
-
-//     const taskItems = taskList.querySelectorAll("li");
-//     const deleteButton = taskItems[0].querySelector(".delete-btn");
-
-//     // Simulate clicking the delete button
-//     deleteButton.dispatchEvent(
-//       new window.MouseEvent("click", { bubbles: true })
-//     );
-
-//     // Wait for the DOM to be updated
-//     await new Promise((resolve) => setTimeout(resolve, 0));
-
-//     // Ensure the task list is empty
-//     expect(taskList.children.length).toBe(0); // Task list should be empty
-//   });
-// });
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { JSDOM } from "jsdom";
-import fs from "fs";
-import path from "path";
-
-// Set up a global document and window object using jsdom for Vitest tests
-const htmlPath = path.resolve(__dirname, "../src/component/index.html");
-const htmlContent = fs.readFileSync(htmlPath, "utf8");
-
-let window, document;
-
-describe("Task Manager", () => {
-  let taskForm, taskInput, taskList;
-
-  beforeEach(() => {
-    // Set up the DOM for each test
-    const dom = new JSDOM(htmlContent, { runScripts: "dangerously" });
-    window = dom.window;
-    document = window.document;
-
-    // Get references to the form, input, and task list
-    taskForm = document.getElementById("task-form");
-    taskInput = document.getElementById("task-title");
-    taskList = document.getElementById("task-list");
-
-    // Import the frontend.js which sets up event listeners
-    const script = document.createElement("script");
-    script.textContent = fs.readFileSync(
-      path.resolve(__dirname, "../frontend.js"),
-      "utf8"
-    );
-    document.body.appendChild(script);
+    expect(response.status).toBe(201);
+    expect(response.body).toHaveProperty("id");
+    expect(response.body.title).toBe("Test Task");
+    expect(response.body.completed).toBe(false);
   });
 
-  afterEach(() => {
-    // Cleanup any global mocks or event listeners after each test
-    global.prompt = undefined; // Reset global prompt mock if used
-    document.body.innerHTML = ""; // Clear the DOM after each test
+  it("should fetch all tasks", async () => {
+    await request(app).post("/tasks").send({ title: "Task 1" });
+    await request(app).post("/tasks").send({ title: "Task 2" });
+
+    const response = await request(app).get("/tasks");
+
+    expect(response.status).toBe(200);
+    expect(response.body.length).toBe(2);
   });
 
-  it("should add a task to the list", async () => {
-    taskInput.value = "Test Task"; // Set task title
-    taskForm.dispatchEvent(new window.Event("submit")); // Use window.Event instead of Event
+  it("should update a task", async () => {
+    const task = await request(app).post("/tasks").send({ title: "Old Task" });
 
-    // Wait for the DOM to be updated
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    const response = await request(app)
+      .put(`/tasks/${task.body.id}`)
+      .send({ title: "Updated Task", completed: true });
 
-    const taskItems = taskList.querySelectorAll("li");
-    expect(taskItems.length).toBe(1); // There should be 1 task
-    expect(taskItems[0].querySelector(".task-title").textContent).toBe(
-      "Test Task"
-    );
-  });
-
-  it("should edit a task", async () => {
-    // Add a task first
-    taskInput.value = "Task to be edited";
-    taskForm.dispatchEvent(new window.Event("submit"));
-
-    // Wait for the task to be added
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    const taskItems = taskList.querySelectorAll("li");
-    const editButton = taskItems[0].querySelector(".edit-btn");
-
-    // Mock the prompt function
-    global.prompt = vi.fn().mockReturnValue("Task to be edited");
-
-    // Simulate clicking the edit button
-    editButton.dispatchEvent(new window.MouseEvent("click", { bubbles: true }));
-
-    // Wait for the DOM to be updated
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    // Ensure the task is updated
-    expect(taskItems[0].querySelector(".task-title").textContent).toBe(
-      "Task to be edited"
-    );
+    expect(response.status).toBe(200);
+    expect(response.body.title).toBe("Updated Task");
+    expect(response.body.completed).toBe(true);
   });
 
   it("should delete a task", async () => {
-    // Add a task first
-    taskInput.value = "Task to be deleted";
-    taskForm.dispatchEvent(new window.Event("submit"));
+    const task = await request(app)
+      .post("/tasks")
+      .send({ title: "To be deleted" });
 
-    // Wait for the task to be added
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    const response = await request(app).delete(`/tasks/${task.body.id}`);
 
-    const taskItems = taskList.querySelectorAll("li");
-    const deleteButton = taskItems[0].querySelector(".delete-btn");
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ message: "Task deleted successfully" });
 
-    // Simulate clicking the delete button
-    deleteButton.dispatchEvent(
-      new window.MouseEvent("click", { bubbles: true })
-    );
+    const allTasks = await request(app).get("/tasks");
+    expect(allTasks.body.length).toBe(0);
+  });
 
-    // Wait for the DOM to be updated
-    await new Promise((resolve) => setTimeout(resolve, 0));
+  it("should return 404 if updating a non-existent task", async () => {
+    const response = await request(app)
+      .put("/tasks/999")
+      .send({ title: "Non-existent" });
 
-    // Ensure the task list is empty
-    expect(taskList.children.length).toBe(0); // Task list should be empty
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBe("Task not found");
+  });
+
+  it("should return 404 if deleting a non-existent task", async () => {
+    const response = await request(app).delete("/tasks/999");
+
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBe("Task not found");
   });
 });
