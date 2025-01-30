@@ -1,5 +1,5 @@
 import { Linter } from "eslint";
-import prettierRecommended from "eslint-config-prettier";
+import prettierConfig from "eslint-config-prettier";
 
 const config = [
   {
@@ -58,7 +58,7 @@ const config = [
       "valid-typeof": ["error", { requireStringLiterals: true }],
     },
   },
-  prettierRecommended,
+  prettierConfig,
 ];
 
 export default config;
