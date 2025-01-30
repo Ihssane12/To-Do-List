@@ -1,5 +1,4 @@
 import { Linter } from "eslint";
-import typescriptEslintRecommended from "@typescript-eslint/eslint-plugin/dist/configs/recommended";
 import prettierRecommended from "eslint-config-prettier";
 
 const config = [
@@ -15,10 +14,6 @@ const config = [
     },
     rules: {
       // Add your custom rules here
-    },
-  },
-  {
-    rules: {
       "for-direction": "error",
       "getter-return": ["error", { allowImplicit: true }],
       "no-async-promise-executor": "error",
@@ -63,7 +58,6 @@ const config = [
       "valid-typeof": ["error", { requireStringLiterals: true }],
     },
   },
-  typescriptEslintRecommended,
   prettierRecommended,
 ];
 
